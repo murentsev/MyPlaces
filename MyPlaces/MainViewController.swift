@@ -52,7 +52,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         if isFiltering {
             return filtredPlaces.count
         }
-        return places.isEmpty ? 0: places.count
+        return places.count
     }
     
     
@@ -60,21 +60,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomTableViewCell
         
-        var place = Place()
+       
         
-        if isFiltering {
-            place = filtredPlaces[indexPath.row]
-        } else {
-            place = places[indexPath.row]
-        }
+        let place = isFiltering ? filtredPlaces[indexPath.row] : places[indexPath.row]
 
         cell.nameLable.text = place.name
         cell.locationLable.text = place.location
         cell.typeLable.text = place.type
         cell.imageOfPlace.image = UIImage(data: place.imageData!)
-
-        cell.imageOfPlace.layer.cornerRadius = cell.imageOfPlace.frame.size.height / 2
-        cell.imageOfPlace.clipsToBounds = true
+        cell.cosmosView.rating = place.rating
 
         return cell
     }
@@ -119,12 +113,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             guard let indexPath = tableView.indexPathForSelectedRow else { return }
-            let place: Place
-            if isFiltering {
-                place = filtredPlaces[indexPath.row]
-            } else {
-                place = places[indexPath.row]
-            }
+            let place = isFiltering ? filtredPlaces[indexPath.row] : places[indexPath.row]
             let newPlaceNC = segue.destination as? UINavigationController
             let newPlaceVC = newPlaceNC?.topViewController as? NewPlaceViewController
             newPlaceVC?.currentPlace = place
